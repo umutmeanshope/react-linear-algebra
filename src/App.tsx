@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calculator, Shuffle, RotateCw, Grid3x3, Divide, Layers } from 'lucide-react';
 
 type Matrix = number[][];
 type Vector = number[];
 
-export default function MatrixCalculator(): JSX.Element {
+export default function MatrixCalculator() {
   const [activeTab, setActiveTab] = useState<'matrix' | 'vector'>('matrix');
   const [size, setSize] = useState<number>(3);
   const [matrix, setMatrix] = useState<Matrix>(() =>
@@ -148,7 +148,6 @@ export default function MatrixCalculator(): JSX.Element {
   // Vector operations
   const dotProduct = (v1: Vector, v2: Vector): number => {
     const res = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
-    setDotResult(res);
     return res;
   };
 
@@ -158,7 +157,6 @@ export default function MatrixCalculator(): JSX.Element {
       v1[2] * v2[0] - v1[0] * v2[2],
       v1[0] * v2[1] - v1[1] * v2[0],
     ];
-    setCrossResult(res);
     return res;
   };
 
@@ -215,7 +213,7 @@ export default function MatrixCalculator(): JSX.Element {
     setCrossResult(null);
   };
 
-  const renderMatrix = (mat: Matrix, isResult = false): JSX.Element => (
+  const renderMatrix = (mat: Matrix, isResult = false) => (
     <div className="inline-block">
       <div className="flex flex-col gap-1 p-4 bg-white rounded-lg border-2 border-gray-300">
         {mat.map((row, i) => (
@@ -245,7 +243,7 @@ export default function MatrixCalculator(): JSX.Element {
     </div>
   );
 
-  const renderVector = (vec: Vector | (number | string)[], isResult = false, vectorNum?: 1 | 2): JSX.Element => (
+  const renderVector = (vec: Vector | (number | string)[], isResult = false, vectorNum?: 1 | 2) => (
     <div className="inline-block">
       <div className="flex flex-col gap-1 p-4 bg-white rounded-lg border-2 border-gray-300">
         {vec.map((val, i) => (

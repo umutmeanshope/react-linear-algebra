@@ -18,8 +18,7 @@ export default function MatrixCalculator() {
   const [vector2, setVector2] = useState<Vector>([0, 0, 0]);
   const [vectorResult, setVectorResult] = useState<number | Vector | null>(null);
   const [vectorOperation, setVectorOperation] = useState<string>('');
-  const [dotResult, setDotResult] = useState<number | null>(null);
-  const [crossResult, setCrossResult] = useState<Vector | null>(null);
+  
 
   const handleSizeChange = (newSize: number): void => {
     setSize(newSize);
@@ -66,8 +65,7 @@ export default function MatrixCalculator() {
     setVector2(Array.from({ length: 3 }, () => Math.floor(Math.random() * 21) - 10));
     setVectorResult(null);
     setVectorOperation('');
-    setDotResult(null);
-    setCrossResult(null);
+    
   };
 
   const calculateDeterminant = (mat: Matrix): number => {
@@ -209,8 +207,7 @@ export default function MatrixCalculator() {
     setVector2([0, 0, 0]);
     setVectorResult(null);
     setVectorOperation('');
-    setDotResult(null);
-    setCrossResult(null);
+    
   };
 
   const renderMatrix = (mat: Matrix, isResult = false) => (

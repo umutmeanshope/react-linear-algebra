@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Calculator, Shuffle, RotateCw, Grid3x3, Divide, Layers } from 'lucide-react';
+import { Calculator, Shuffle, RotateCw, Grid3x3, Divide, Layers, Angry } from 'lucide-react';
 
 type Matrix = number[][];
 type Vector = number[];
 
 export default function MatrixCalculator() {
-  const [activeTab, setActiveTab] = useState<'matrix' | 'vector'>('matrix');
+  const [activeTab, setActiveTab] = useState<'matrix' | 'vector' | 'random'>('matrix');
   const [size, setSize] = useState<number>(3);
   const [matrix, setMatrix] = useState<Matrix>(() =>
     Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => 0))
@@ -18,7 +18,12 @@ export default function MatrixCalculator() {
   const [vector2, setVector2] = useState<Vector>([0, 0, 0]);
   const [vectorResult, setVectorResult] = useState<number | Vector | null>(null);
   const [vectorOperation, setVectorOperation] = useState<string>('');
-  
+
+  // Random matrices tab states
+  const [randRows, setRandRows] = useState<number>(3);
+  const [randCols, setRandCols] = useState<number>(3);
+  const [randMatrixA, setRandMatrixA] = useState<Matrix | null>(null);
+  const [randMatrixB, setRandMatrixB] = useState<Matrix | null>(null);
 
   const handleSizeChange = (newSize: number): void => {
     setSize(newSize);
@@ -65,7 +70,25 @@ export default function MatrixCalculator() {
     setVector2(Array.from({ length: 3 }, () => Math.floor(Math.random() * 21) - 10));
     setVectorResult(null);
     setVectorOperation('');
-    
+  };
+
+  // NEW: generate two random matrices with user-given rows & cols
+  const generateTwoRandomMatrices = (): void => {
+    const rows = Math.max(1, randRows);
+    const cols = Math.max(1, randCols);
+
+    const createMatrix = (): Matrix =>
+      Array.from({ length: rows }, () =>
+        Array.from({ length: cols }, () => Math.floor(Math.random() * 21) - 10)
+      );
+
+    setRandMatrixA(createMatrix());
+    setRandMatrixB(createMatrix());
+  };
+
+  const clearRandomMatrices = (): void => {
+    setRandMatrixA(null);
+    setRandMatrixB(null);
   };
 
   const calculateDeterminant = (mat: Matrix): number => {
@@ -95,7 +118,9 @@ export default function MatrixCalculator() {
     const n = mat.length;
     if (n === 1) return [[1]];
 
-    const cofactorMatrix: Matrix = Array.from({ length: n }, () => Array.from({ length: n }, () => 0));
+    const cofactorMatrix: Matrix = Array.from({ length: n }, () =>
+      Array.from({ length: n }, () => 0)
+    );
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
         cofactorMatrix[i][j] = getCofactor(mat, i, j);
@@ -145,7 +170,7 @@ export default function MatrixCalculator() {
 
   // Vector operations
   const dotProduct = (v1: Vector, v2: Vector): number => {
-    const res = (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]);
+    const res = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
     return res;
   };
 
@@ -207,7 +232,6 @@ export default function MatrixCalculator() {
     setVector2([0, 0, 0]);
     setVectorResult(null);
     setVectorOperation('');
-    
   };
 
   const renderMatrix = (mat: Matrix, isResult = false) => (
@@ -329,6 +353,20 @@ export default function MatrixCalculator() {
               <div className="flex items-center gap-2">
                 <Layers className="w-5 h-5" />
                 Vector Operations
+              </div>
+            </button>
+            {/* NEW TAB: Random Matrices */}
+            <button
+              onClick={() => setActiveTab('random')}
+              className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+                activeTab === 'random'
+                  ? 'border-green-600 text-green-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Angry className="w-5 h-5" />
+                Random Matrices
               </div>
             </button>
           </div>
@@ -473,7 +511,6 @@ export default function MatrixCalculator() {
                   </button>
                   <button
                     onClick={() => handleVectorCalculate('cos')}
-                    disabled={false}
                     className="flex cursor-pointer items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
                     Cos θ
@@ -486,7 +523,6 @@ export default function MatrixCalculator() {
                   </button>
                   <button
                     onClick={() => handleVectorCalculate('sin')}
-                    disabled={false}
                     className="flex cursor-pointer items-center gap-2 px-6 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-medium"
                   >
                     Sin θ
@@ -503,6 +539,72 @@ export default function MatrixCalculator() {
                     </div>
                   ) : (
                     renderVector(vectorResult as Vector, true)
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Random Matrices Tab */}
+          {activeTab === 'random' && (
+            <div>
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold text-gray-700 mb-3">Random Matrix Size</h2>
+                <div className="flex flex-wrap items-end gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Rows</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={randRows}
+                      onChange={(e) => setRandRows(Number(e.target.value) || 1)}
+                      className="w-24 h-10 px-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Columns</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={randCols}
+                      onChange={(e) => setRandCols(Number(e.target.value) || 1)}
+                      className="w-24 h-10 px-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-sm text-black"
+                    />
+                  </div>
+                  <button
+                    onClick={generateTwoRandomMatrices}
+                    className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                  >
+                    <Shuffle className="w-5 h-5" />
+                    Generate Two Matrices
+                  </button>
+                  <button
+                    onClick={clearRandomMatrices}
+                    className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  Entries are random integers in the range [-10, 10].
+                </p>
+              </div>
+
+              {(randMatrixA || randMatrixB) && (
+                <div className="mt-6 grid gap-8 md:grid-cols-2">
+                  {randMatrixA && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700 mb-3">Matrix A</h3>
+                      {renderMatrix(randMatrixA, true)}
+                    </div>
+                  )}
+                  {randMatrixB && (
+                    <div>
+                      <h3 className="text-md font-semibold text-gray-700 mb-3">Matrix B</h3>
+                      {renderMatrix(randMatrixB, true)}
+                    </div>
                   )}
                 </div>
               )}

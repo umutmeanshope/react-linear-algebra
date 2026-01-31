@@ -145,7 +145,7 @@ export default function MatrixCalculator() {
 
   // Vector operations
   const dotProduct = (v1: Vector, v2: Vector): number => {
-    const res = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
+    const res = (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]);
     return res;
   };
 
